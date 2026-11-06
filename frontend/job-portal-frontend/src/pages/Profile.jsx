@@ -58,6 +58,7 @@ const Profile = () => {
     return () => URL.revokeObjectURL(objectUrl);
   }, [profilePhoto]);
 
+  // Set user data
   useEffect(() => {
     if (user) {
       setFormData({
@@ -70,6 +71,7 @@ const Profile = () => {
     }
   }, [user]);
 
+  // Fetch company details
   useEffect(() => {
     if (user?.role !== "recruiter") return;
 
@@ -108,6 +110,7 @@ const Profile = () => {
     }));
   };
 
+  // Update profile
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -140,6 +143,7 @@ const Profile = () => {
     }
   };
 
+  // Upload profile photo
   const handlePhotoUpload = async () => {
     if (!profilePhoto || photoLoading) return;
 
@@ -173,6 +177,7 @@ const Profile = () => {
         </h3>
       </div>
 
+      {/* Profile Header */}
       <div className="p-4 sm:p-5 border border-indigo-200 bg-indigo-50 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex flex-col min-[420px]:flex-row items-start min-[420px]:items-center gap-4 sm:gap-6 md:gap-10 w-full min-w-0">
 
@@ -239,6 +244,7 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Photo Buttons */}
         <div className="flex flex-col min-[420px]:flex-row sm:flex-col gap-2 w-full sm:w-auto shrink-0">
           <label
             className="cursor-pointer text-sm flex items-center justify-center gap-2 font-semibold py-2 px-4 rounded-lg text-indigo-700 border-2 border-indigo-300 transition-all duration-300 hover:bg-gradient-to-r hover:from-indigo-400 hover:to-violet-500 hover:text-white w-full"
@@ -260,10 +266,12 @@ const Profile = () => {
         </div>
       </div>
 
+      {/* Profile Form */}
       <form
         className="w-full flex flex-col md:flex-row gap-4"
         onSubmit={handleSubmit}
       >
+        {/* Personal Details */}
         <div className="w-full md:w-1/2 flex">
           <div className="rounded-lg w-full p-4 sm:p-5 h-fit border-2 border-indigo-200 flex flex-col gap-5">
             <div className="flex items-center gap-3 sm:gap-5">
@@ -332,6 +340,7 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Jobseeker Career Profile */}
         {user?.role === "jobseeker" && (
           <div className="rounded-lg p-4 sm:p-5 w-full md:w-1/2 border-2 border-indigo-200 flex flex-col gap-5 min-w-0">
             <div className="flex items-center gap-3 sm:gap-5">
@@ -375,6 +384,7 @@ const Profile = () => {
               />
             </div>
 
+            {/* Resume */}
             <div className="flex items-center gap-3 sm:gap-5">
               <div className="h-12 w-12 shrink-0 bg-indigo-200 rounded-full flex justify-center items-center">
                 <Save className="text-indigo-800" />
@@ -471,6 +481,7 @@ const Profile = () => {
           </div>
         )}
 
+        {/* Recruiter Company Details */}
         {user?.role === "recruiter" && (
           <div className="rounded-lg p-4 sm:p-5 border-2 border-indigo-200 w-full md:w-1/2 flex flex-col gap-5 min-w-0">
             <div className="flex items-center gap-3 sm:gap-5">
