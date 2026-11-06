@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getProfile } from "../redux/slices/authSlice";
@@ -41,6 +42,21 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [resume, setResume] = useState(null);
   const [profilePhoto, setProfilePhoto] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState("");
+  const [photoLoading, setPhotoLoading] = useState(false);
+
+  // Selected profile photo preview
+  useEffect(() => {
+    if (!profilePhoto) {
+      setPhotoPreview("");
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(profilePhoto);
+    setPhotoPreview(objectUrl);
+
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [profilePhoto]);
 
   useEffect(() => {
     if (user) {
@@ -124,6 +140,30 @@ const Profile = () => {
     }
   };
 
+  const handlePhotoUpload = async () => {
+    if (!profilePhoto || photoLoading) return;
+
+    const data = new FormData();
+    data.append("profilePhoto", profilePhoto);
+
+    try {
+      setPhotoLoading(true);
+
+      await api.put("/user/profile-photo", data);
+      await dispatch(getProfile());
+
+      toast.success("Profile photo updated successfully");
+      setProfilePhoto(null);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.msg ||
+          "Failed to upload profile photo"
+      );
+    } finally {
+      setPhotoLoading(false);
+    }
+  };
+
   return (
     <div className="p-3 sm:p-5 flex flex-col gap-4">
       <div>
@@ -135,19 +175,21 @@ const Profile = () => {
 
       <div className="p-4 sm:p-5 border border-indigo-200 bg-indigo-50 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex flex-col min-[420px]:flex-row items-start min-[420px]:items-center gap-4 sm:gap-6 md:gap-10 w-full min-w-0">
-          {user?.profile?.profilePhoto && (
-            <div className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0">
+
+          {(photoPreview || user?.profile?.profilePhoto) && (
+            <div className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 rounded-full overflow-hidden border-2 border-white shadow-md">
               <img
-                className="w-full h-full rounded-full object-fill"
-                src={user.profile.profilePhoto}
+                className="w-full h-full rounded-full object-cover object-center"
+                src={photoPreview || user.profile.profilePhoto}
                 alt="Profile"
               />
-              <button
-                type="button"
-                className="border-2  cursor-pointer absolute bottom-0 right-0 bg-indigo-600 text-white rounded-full p-2"
+
+              <label
+                htmlFor="profile"
+                className="absolute bottom-0 right-0 bg-indigo-600 text-white rounded-full p-2 cursor-pointer hover:bg-indigo-800 transition-colors duration-300"
               >
                 <Camera size={20} />
-              </button>
+              </label>
             </div>
           )}
 
@@ -156,7 +198,15 @@ const Profile = () => {
             type="file"
             accept="image/*"
             className="hidden"
-            onChange={(e) => setProfilePhoto(e.target.files[0])}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+
+              if (file) {
+                setProfilePhoto(file);
+              }
+
+              e.target.value = "";
+            }}
           />
 
           <div className="flex flex-col gap-2 min-w-0 w-full">
@@ -191,7 +241,7 @@ const Profile = () => {
 
         <div className="flex flex-col min-[420px]:flex-row sm:flex-col gap-2 w-full sm:w-auto shrink-0">
           <label
-            className="cursor-pointer text-sm flex items-center justify-center gap-2 font-semibold py-2 px-4 rounded-lg text-indigo-700 border-2 border-indigo-300 transition-all duration-300 hover:bg-gradient-to-r from-indigo-400 to-violet-500 hover:text-white w-full"
+            className="cursor-pointer text-sm flex items-center justify-center gap-2 font-semibold py-2 px-4 rounded-lg text-indigo-700 border-2 border-indigo-300 transition-all duration-300 hover:bg-gradient-to-r hover:from-indigo-400 hover:to-violet-500 hover:text-white w-full"
             htmlFor="profile"
           >
             <Pencil size={18} />
@@ -199,30 +249,13 @@ const Profile = () => {
           </label>
 
           <button
-            className="cursor-pointer text-sm py-2 px-4 rounded-lg flex justify-center items-center gap-2 bg-gradient-to-r from-indigo-400 to-violet-500 text-white border-2 border-indigo-300 transition-all duration-300 hover:bg-none hover:bg-white hover:text-black w-full"
+            className="cursor-pointer text-sm py-2 px-4 rounded-lg flex justify-center items-center gap-2 bg-gradient-to-r from-indigo-500 to-violet-600 text-white border-2 border-indigo-400 transition-all duration-300 hover:from-indigo-700 hover:to-violet-800 hover:shadow-lg hover:shadow-indigo-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-indigo-500 disabled:hover:to-violet-600 w-full"
             type="button"
-            onClick={async () => {
-              if (!profilePhoto) return;
-
-              const data = new FormData();
-              data.append("profilePhoto", profilePhoto);
-
-              try {
-                await api.put("/user/profile-photo", data);
-                await dispatch(getProfile());
-
-                toast.success("Profile photo updated successfully");
-                setProfilePhoto(null);
-              } catch (error) {
-                toast.error(
-                  error.response?.data?.msg ||
-                    "Failed to upload profile photo"
-                );
-              }
-            }}
+            onClick={handlePhotoUpload}
+            disabled={!profilePhoto || photoLoading}
           >
             <Image size={18} />
-            Save Photo
+            {photoLoading ? "Saving..." : "Save Photo"}
           </button>
         </div>
       </div>
@@ -544,7 +577,7 @@ const Profile = () => {
                 <p>You have not registered a company yet.</p>
 
                 <button
-                className=" cursor-pointer"
+                  className="cursor-pointer"
                   type="button"
                   onClick={() => navigate("/register-company")}
                 >
