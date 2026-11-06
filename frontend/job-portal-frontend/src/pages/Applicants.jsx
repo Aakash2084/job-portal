@@ -247,7 +247,7 @@ const Applicants = () => {
   <img
     src={application.applicant?.profile?.profilePhoto}
     alt={application.applicant?.fullName || "Applicant"}
-    className="h-full w-full rounded-full object-fill object-center"
+    className="h-full w-full rounded-full object-cover object-center"
   />
 </div>
 

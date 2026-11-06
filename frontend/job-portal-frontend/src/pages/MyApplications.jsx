@@ -98,7 +98,7 @@ function MyApplications() {
                 <div className="border-2 border-gray-200 h-12 w-12 shrink-0 rounded-lg flex justify-center items-center">
                   {application.job?.company?.logo ? (
                     <img
-                      className="h-10 w-10 object-fill rounded"
+                      className="h-10 w-10 object-cover object-center rounded"
                       src={application.job.company.logo}
                       alt="Company logo"
                     />

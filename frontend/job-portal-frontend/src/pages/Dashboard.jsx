@@ -346,7 +346,7 @@ const Dashboard = () => {
 
                   {application.applicant.profile?.profilePhoto ? (
                     <img
-                      className="h-14 w-14 shrink-0 rounded-full object-fill sm:h-16 sm:w-16"
+                      className="h-14 w-14 shrink-0 rounded-full object-cover object-center sm:h-16 sm:w-16"
                       src={application.applicant.profile.profilePhoto}
                       alt=""
                     />
