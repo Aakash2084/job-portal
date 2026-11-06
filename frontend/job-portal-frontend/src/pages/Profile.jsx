@@ -179,24 +179,39 @@ const Profile = () => {
 
       {/* Profile Header */}
       <div className="p-4 sm:p-5 border border-indigo-200 bg-indigo-50 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+
         <div className="flex flex-col min-[420px]:flex-row items-start min-[420px]:items-center gap-4 sm:gap-6 md:gap-10 w-full min-w-0">
 
-          {(photoPreview || user?.profile?.profilePhoto) && (
-            <div className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 rounded-full overflow-hidden border-2 border-white shadow-md">
-              <img
-                className="w-full h-full rounded-full object-cover object-center"
-                src={photoPreview || user.profile.profilePhoto}
-                alt="Profile"
-              />
+          {/* Profile Photo */}
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0">
 
-              <label
-                htmlFor="profile"
-                className="absolute bottom-0 right-0 bg-indigo-600 text-white rounded-full p-2 cursor-pointer hover:bg-indigo-800 transition-colors duration-300"
-              >
-                <Camera size={20} />
-              </label>
+            {/* Image wrapper: overflow-hidden only here */}
+            <div className="w-full h-full rounded-full overflow-hidden border-2 border-white shadow-md bg-indigo-200 flex items-center justify-center">
+
+              {photoPreview || user?.profile?.profilePhoto ? (
+                <img
+                  className="w-full h-full object-cover object-center"
+                  src={photoPreview || user?.profile?.profilePhoto}
+                  alt="Profile"
+                />
+              ) : (
+                <User
+                  size={48}
+                  className="text-indigo-600"
+                />
+              )}
+
             </div>
-          )}
+
+            {/* Camera button outside image wrapper */}
+            <label
+              htmlFor="profile"
+              className="absolute bottom-0 right-0 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-indigo-600 text-white border-2 border-white shadow-lg cursor-pointer hover:bg-indigo-800 transition-all duration-300 hover:scale-110"
+            >
+              <Camera size={19} />
+            </label>
+
+          </div>
 
           <input
             id="profile"
@@ -207,6 +222,12 @@ const Profile = () => {
               const file = e.target.files?.[0];
 
               if (file) {
+                if (!file.type.startsWith("image/")) {
+                  toast.error("Please select a valid image");
+                  e.target.value = "";
+                  return;
+                }
+
                 setProfilePhoto(file);
               }
 
@@ -246,6 +267,7 @@ const Profile = () => {
 
         {/* Photo Buttons */}
         <div className="flex flex-col min-[420px]:flex-row sm:flex-col gap-2 w-full sm:w-auto shrink-0">
+
           <label
             className="cursor-pointer text-sm flex items-center justify-center gap-2 font-semibold py-2 px-4 rounded-lg text-indigo-700 border-2 border-indigo-300 transition-all duration-300 hover:bg-gradient-to-r hover:from-indigo-400 hover:to-violet-500 hover:text-white w-full"
             htmlFor="profile"
