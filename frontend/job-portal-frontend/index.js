@@ -3,7 +3,7 @@ import Login from "./src/pages/Login";
 import Dashboard from "./src/pages/Dashboard";
 import ProtectedRoute from "./src/components/ProtectedRoute";
 import Home from "./src/pages/Home";
-import Jobs from "./src/pages/jobs";
+import Jobs from "./src/pages/Jobs.jsx";
 import JobDetails from "./src/pages/JobDetails";
 import MyApplications from "./src/pages/MyApplications";
 import MyJobs from "./src/pages/MyJobs";
